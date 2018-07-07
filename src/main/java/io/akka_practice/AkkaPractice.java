@@ -6,6 +6,8 @@ import ch.qos.logback.core.util.StatusPrinter;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 import io.akka_practice.cluster.SimpleClusterListener;
+import java.net.URL;
+import java.net.URLClassLoader;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -44,7 +46,8 @@ public class AkkaPractice {
         log.info("port: {}", port);
         final Config config =
                 ConfigFactory.parseString("akka.remote.netty.tcp.port=" + port + "\n" +
-                                                  "akka.remote.artery.canonical.port=" + port);
+                                                  "akka.remote.artery.canonical.port=" + port)
+                        .withFallback(ConfigFactory.load());
 
         final ActorSystem system = ActorSystem.create(AkkaPractice.class.getSimpleName(), config);
         system.actorOf(SimpleClusterListener.props(), "clusterListener");
@@ -79,6 +82,14 @@ public class AkkaPractice {
     }
 
     public static void main(String[] args) {
+        ClassLoader cl = ClassLoader.getSystemClassLoader();
+
+        URL[] urls = ((URLClassLoader)cl).getURLs();
+
+        for(URL url: urls){
+            System.out.println(url.getFile());
+        }
+
         final AkkaPractice akkaPractice = new AkkaPractice();
         akkaPractice.run(args);
     }

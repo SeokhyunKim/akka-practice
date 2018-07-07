@@ -16,13 +16,13 @@ mainClassName = "io.akka_practice.AkkaPractice"
 applicationDefaultJvmArgs = ["-Dorg.slf4j.simpleLogger.defaultLogLevel=debug"]
 
 run {
-    // - split space-delimited value in promotions_tool.args and pass as args
+    // - split space-delimited value in akka_practice.args and pass as args
     // - this option is required when you want to run thorough gradle run
-    //   ex) gradle run -Dpromotions_tool.args="YOUR_ARGS"
+    //   ex) gradle run -Dakka_practice.args="YOUR_ARGS"
     // - don't mind when you run this through command line
-    String benefitToolsArgs = System.getProperty("promotions_tool.args")
-    if (benefitToolsArgs != null) {
-        args benefitToolsArgs.split()
+    String toolArgs = System.getProperty("akka_practice.args")
+    if (toolArgs != null) {
+        args toolArgs.split()
     }
 }
 
@@ -53,12 +53,14 @@ repositories {
 }
 
 dependencies {
+    // lombok
     compileOnly "org.projectlombok:lombok:1.16.18"
 
-
+    // akka
     compile 'com.typesafe.akka:akka-actor_2.12:2.5.13'
-    compile 'com.lightbend.akka.management:akka-management-cluster-bootstrap_2.12:0.14.0'
-    compile 'com.lightbend.akka.discovery:akka-discovery-dns_2.12:0.14.0'
+    compile 'com.typesafe.akka:akka-cluster_2.12:2.5.13'
+
+    // apache
     compile 'commons-cli:commons-cli:1.4'
     compile 'org.apache.commons:commons-lang3:3.0'
 
@@ -67,9 +69,9 @@ dependencies {
     compile 'ch.qos.logback:logback-classic:1.2.3'
     //compile 'org.slf4j:slf4j-simple:1.7.25' // simple sfl4j implementation which print out all logs to stdout.
 
+    // JUnit 5
     testCompile 'org.junit.jupiter:junit-jupiter-api:5.1.0'
     testCompile 'com.typesafe.akka:akka-testkit_2.12:2.5.3'
-
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.1.0'
 }
 
