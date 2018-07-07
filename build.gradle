@@ -1,0 +1,78 @@
+//-----------------------------------------------------------------------------
+apply plugin: 'java'
+apply plugin: 'application'
+
+//-----------------------------------------------------------------------------
+version = "0.0.1"
+
+
+//-----------------------------------------------------------------------------
+// application config
+
+// set main class for application plugin
+mainClassName = "io.akka_practice.AkkaPractice"
+
+// default JVM args for application plugin
+applicationDefaultJvmArgs = ["-Dorg.slf4j.simpleLogger.defaultLogLevel=debug"]
+
+run {
+    // - split space-delimited value in promotions_tool.args and pass as args
+    // - this option is required when you want to run thorough gradle run
+    //   ex) gradle run -Dpromotions_tool.args="YOUR_ARGS"
+    // - don't mind when you run this through command line
+    String benefitToolsArgs = System.getProperty("promotions_tool.args")
+    if (benefitToolsArgs != null) {
+        args benefitToolsArgs.split()
+    }
+}
+
+startScripts {
+
+    def addShellDirVar = { findJVMOpt, line ->
+        line = line.replaceAll(~/^${findJVMOpt}=.*$/) { original ->
+            original += "\" -Dshell.dir=\$SAVED\""
+        }
+    }
+    def addShellDirUnix = addShellDirVar.curry('DEFAULT_JVM_OPTS')
+    def addShellDirWindows = addShellDirVar.curry('set DEFAULT_JVM_OPTS')
+    doLast {
+        unixScript.text = unixScript
+            .readLines()
+            .collect(addShellDirUnix)
+            .join('\n')
+        windowsScript.text = windowsScript
+            .readLines()
+            .collect(addShellDirWindows)
+            .join('\r\n')
+    }
+}
+
+repositories {
+    jcenter()
+    mavenCentral()
+}
+
+dependencies {
+    compileOnly "org.projectlombok:lombok:1.16.18"
+
+
+    compile 'com.typesafe.akka:akka-actor_2.12:2.5.13'
+    compile 'com.lightbend.akka.management:akka-management-cluster-bootstrap_2.12:0.14.0'
+    compile 'com.lightbend.akka.discovery:akka-discovery-dns_2.12:0.14.0'
+    compile 'commons-cli:commons-cli:1.4'
+    compile 'org.apache.commons:commons-lang3:3.0'
+
+    // slf4j + logback
+    compile 'org.slf4j:slf4j-api:1.7.25'
+    compile 'ch.qos.logback:logback-classic:1.2.3'
+    //compile 'org.slf4j:slf4j-simple:1.7.25' // simple sfl4j implementation which print out all logs to stdout.
+
+    testCompile 'org.junit.jupiter:junit-jupiter-api:5.1.0'
+    testCompile 'com.typesafe.akka:akka-testkit_2.12:2.5.3'
+
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.1.0'
+}
+
+test {
+    useJUnitPlatform()
+}

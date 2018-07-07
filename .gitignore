@@ -1,0 +1,25 @@
+# OS files
+*.DS_Store
+Thumbs.db
+
+# Build files
+bin
+target
+build/
+.gradle
+classes/
+
+# Coupang pylon generated files
+generated/
+
+# Eclipse project files
+.classpath
+.project
+.settings
+.springBeans
+
+# Intellij IDEA files
+*.iml
+*.ipr
+*.iws
+*.idea
